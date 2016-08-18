@@ -18,7 +18,7 @@ namespace AppAPITemplate
 					Children = {
 						new Label {
 							HorizontalTextAlignment = TextAlignment.Center,
-							Text = "Welcome to Xamarin Forms!"
+							Text = "Hello to Xamarin Forms!"
 						}
 					}
 				}
