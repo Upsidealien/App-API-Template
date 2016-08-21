@@ -7,6 +7,11 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Xamarin.Forms;
+using AppAPITemplate;
+
+[assembly: ExportRenderer(typeof(APIMenu), typeof(APIMenuRenderer))]
+
 
 namespace AppAPITemplate.Droid
 {
