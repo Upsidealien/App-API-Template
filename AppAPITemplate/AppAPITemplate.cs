@@ -39,10 +39,11 @@ namespace AppAPITemplate
 		*/
 
 
-		public override void ClickMenuItem()
+		public override void ClickMenuItem(MenuItem itemClicked)
 		{
 			//Implements menu item click
 			//e.g. Navigation.PushAsync(new SecondMenu(e.Item as string));
+			Navigation.PushAsync(new SecondMenu(itemClicked));
 		}
 
 		public override async Task<List<MenuItem>> RequestTimeAsync()
@@ -58,6 +59,7 @@ namespace AppAPITemplate
 			};
 
 			return firstMenuList;
+
 		}
 
 
@@ -72,17 +74,21 @@ namespace AppAPITemplate
 			- And then takes you to the screen for that menu item
 			
 		*/
-		public string category;
+		public MenuItem currentItem;
 
-		public SecondMenu(string APIItem) : base()
+		public SecondMenu(MenuItem APIItem) : base()
 		{
-			category = APIItem;
+			this.currentItem = APIItem;
+
+			Title = "API Template 2";
+			Content = list;
 		}
 
-		public override void ClickMenuItem()
+		public override void ClickMenuItem(MenuItem itemClicked)
 		{
 			//Implements menu item click
 			//e.g. Navigation.PushAsync(new InfoPage(e.Item as string));
+			Navigation.PushAsync(new InfoPage(itemClicked));
 		}
 
 
@@ -93,8 +99,8 @@ namespace AppAPITemplate
 			//Create an Example API
 			List<MenuItem> firstMenuList = new List<MenuItem>
 			{
-				new MenuItem { Name = "2 Thomas", Description = "Is Great"},
-				new MenuItem { Name = "2 Cartwright", Description = "Is Also Great"},
+				new MenuItem { Name = "2 Thomas" + this.currentItem.Name, Description = "Is Great"},
+				new MenuItem { Name = "2 Cartwright" + this.currentItem.Name, Description = "Is Also Great"},
 
 			};
 
@@ -114,27 +120,40 @@ namespace AppAPITemplate
 		- When you click a menu item it takes you to the next screen
 
 		*/
-
-
-		public MenuList()
-		{
-
-			/*
-				- This lists all the menu items and gives a little description
-				- Says "Loading" while waiting for the API to return
-			*/
-
-			Content = list;
-
-		}
-
 		protected readonly ListView list = new ListView
 		{
 			/*
 				- Starts by just saying "Loading..."
 				- When the API call is complete it contains the MenuCells.
 			*/
+			ItemsSource = new List<MenuItem>
+			{
+				new MenuItem { Name = "Loading...", Description = "If you click this everything breaks" },
+			},
+			ItemTemplate = new DataTemplate(typeof(MenuCell)),
+			RowHeight = MenuCell.RowHeight,
 		};
+
+
+
+		public MenuList()
+		{
+			/*
+				- This lists all the menu items and gives a little description
+				- Says "Loading" while waiting for the API to return
+			*/
+			Title = "API Template";
+			Content = list;
+
+			list.ItemTapped += (sender, e) =>
+			{
+				list.SelectedItem = null;
+				//Navigation.PushAsync(new SecondMenu(e.Item as MenuItem));
+				ClickMenuItem(e.Item as MenuItem);
+			};
+
+
+		}
 
 		protected override async void OnAppearing()
 		{
@@ -142,19 +161,20 @@ namespace AppAPITemplate
 				- Awaits for API to return values
 				- Then changes "list" to contain the MenuCells
 			*/
+
+			base.OnAppearing();
+			list.ItemsSource = await RequestTimeAsync();
 		}
 
-
 		//What happens when you click on a menu item
-		public abstract void ClickMenuItem();
-
+		public abstract void ClickMenuItem(MenuItem itemClicked);
 
 		//This sends a request to the API for the menu items
 		public abstract Task<List<MenuItem>> RequestTimeAsync();
-
-	
-		
 	}
+
+
+
 
 
 	public class MenuItem
@@ -162,8 +182,8 @@ namespace AppAPITemplate
 		/*
 			List things that will be displayed on each menu item (probably just two strings)
 		*/
-		public string Name;
-		public string Description;
+		public string Name { get; set; }
+		public string Description { get; set; }
 	
 	}
 
@@ -172,27 +192,68 @@ namespace AppAPITemplate
 		/*
 			Menu cell = all the code for displaying the info of a MenuItem
 		*/
+		public const int RowHeight = 55;
+
+		public MenuCell()
+		{
+			var nameLabel = new Label { FontAttributes = FontAttributes.Bold };
+			nameLabel.SetBinding(Label.TextProperty, "Name");
+
+			var descriptionLabel = new Label { TextColor = Color.Gray };
+			descriptionLabel.SetBinding(Label.TextProperty, "Description");
+
+			View = new StackLayout
+			{
+				Spacing = 2,
+				Padding = 5,
+				Children = {
+					nameLabel,
+					descriptionLabel,
+				},
+			};
+		}
 
 	}
 
 
-	public class InfoPage : ContentPage 
+
+
+
+
+
+	public class InfoPage : ContentPage
 	{
 		/*
 			Displays all the information for the API menus	
 		*/
-		readonly StackLayout pageInfo = new StackLayout
+		static Label name = new Label
 		{
-			//This will hold the "Loading..." label while waiting for the API call
+			Text = "Timmy",
+			HorizontalOptions = LayoutOptions.Start,
 		};
 
-		public string apiItem;
+
+		StackLayout pageInfo = new StackLayout
+		{
+			Spacing = 0,
+			VerticalOptions = LayoutOptions.FillAndExpand,
+
+			Children =
+			{
+				name,
+
+			},
+		};
+
+
+		public MenuItem currentItem;
 
 		//This holds the Views (it will switch between saying "Loading" and showing the info)
-		public InfoPage(string item)
+		public InfoPage(MenuItem item)
 		{
-			apiItem = item;
+			currentItem = item;
 			Content = pageInfo;
+
 
 		}
 
@@ -200,20 +261,17 @@ namespace AppAPITemplate
 		protected override async void OnAppearing()
 		{
 			//This will call the API and change the pageInfo once the info has been retrieved
-
+			base.OnAppearing();
+			name.Text = await RequestTimeAsync();
 		}
 
-		static async Task<List<string>> RequestTimeAsync()
+		static async Task<string> RequestTimeAsync()
 		{
 			//This makes the actual API call
 
 			//Create an Example API
-			List<string> firstMenuList = new List<string>
-			{
-				"Thomas",
-				"Cartwright",
+			string firstMenuList = "Hello";
 
-			};
 
 			return firstMenuList;
 		}
