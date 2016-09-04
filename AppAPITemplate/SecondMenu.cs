@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace AppAPITemplate
 {
@@ -30,41 +31,53 @@ namespace AppAPITemplate
 
 		public List<MenuItem> CallAPI(MenuItem menuItem)
 		{
-			//Create an Example API
-			List<MenuItem> menuList = new List<MenuItem>
-			{
-				new MenuItem { Name = "1 Thomas", Description = "Is Great"},
-				new MenuItem { Name = "1 Cartwright", Description = "Is Also Great"},
-
-			};
+			List<MenuItem> menuList = ConstructMenuItemList(GetResponseFromAPI(menuItem));
 
 			return menuList;
+		}
 
-			/*
-				JSON apiJson = getJSONFromAPI(menuItem);
 
-				List<MenuItem> menuItems = turnJSONIntoMenuItem(apiJson);
+		public string GetResponseFromAPI(MenuItem menuItem)
+		{
 
-			*/
+			//string query = constructQuery(menuItem);
+
+			string results = "[{ Name : \"Thomas 2\", Description : \"Is the best 2\"}, {Name : \"Cartwright 2\", Description : \"Is the bestest 2\"}]"; //string results = call query.
+
+			return results;
+		}
+
+		public List<MenuItem> ConstructMenuItemList(string response)
+		{
+
+			List<MenuItem> menuItems = new List<MenuItem>();
+
+			dynamic jsonResult = JsonConvert.DeserializeObject(response); //var jsonResult = Newtonsoft.Json.Linq.JObject.Parse(results);
+
+			foreach (var item in jsonResult)
+			{
+				MenuItem tempMenuItem = new MenuItem();
+
+				tempMenuItem.Name = item["Name"].Value;
+				tempMenuItem.Description = item["Description"].Value;
+
+
+				menuItems.Add(tempMenuItem);
+
+
+			}
+
+
+			return menuItems;
+
 		}
 
 
 		/*
-			getJsonFromAPI(MenuItem menuItem) {
+			constructQuery(MenuItem menuItem) {
 
-				string query = constructQuery(menuItem);
-
-				JSON apiJson = query the API
-				
-			}
-
-			turnJSONIntoMenuItem(JSON apiJson) {
-
-				new MenuItem;
-				
-				MenuItem.Name = apiJson.name;
-				MenuItem.Description = api.Json.description;
-
+				return query;
+	
 			}
 		*/
 	}

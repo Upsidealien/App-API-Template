@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+
 
 namespace AppAPITemplate
 {
@@ -23,24 +25,9 @@ namespace AppAPITemplate
 
 		public List<MenuItem> CallAPI()
 		{
-			//Calls the API
-
-			//Create an Example API
-			List<MenuItem> menuList = new List<MenuItem>
-			{
-				new MenuItem { Name = "1 Thomas", Description = "Is Great"},
-				new MenuItem { Name = "1 Cartwright", Description = "Is Also Great"},
-
-			};
+			List<MenuItem> menuList = ConstructMenuItemList(GetResponseFromAPI(new MenuItem()));
 
 			return menuList;
-
-			/*
-				JSON apiJson = getJSONFromAPI(menuItem);
-
-				List<MenuItem> menuItems = turnJSONIntoMenuItem(apiJson);
-
-			*/
 		}
 
 		public void ClickMenuItem(MenuItem itemClicked)
@@ -50,22 +37,46 @@ namespace AppAPITemplate
 			Navigation.PushAsync(new SecondMenu(itemClicked));
 		}
 
-		/*
-			getJsonFromAPI(MenuItem menuItem) {
 
-				string query = constructQuery(menuItem);
+		public string GetResponseFromAPI(MenuItem menuItem) {
 
-				JSON apiJson = query the API
-				
+			//string query = constructQuery(menuItem);
+
+			string results = "[{ Name : \"Thomas\", Description : \"Is the best\"}, {Name : \"Cartwright\", Description : \"Is the bestest\"}]"; //string results = call query.
+
+			return results;
+		}
+
+		public List<MenuItem> ConstructMenuItemList(string response) {
+
+			List<MenuItem> menuItems = new List<MenuItem>();
+
+			dynamic jsonResult = JsonConvert.DeserializeObject(response); //var jsonResult = Newtonsoft.Json.Linq.JObject.Parse(results);
+
+			foreach (var item in jsonResult)
+			{
+				MenuItem tempMenuItem = new MenuItem();
+
+				tempMenuItem.Name = item["Name"].Value;
+				tempMenuItem.Description = item["Description"].Value;
+
+
+				menuItems.Add(tempMenuItem);
+
+
 			}
 
-			turnJSONIntoMenuItem(JSON apiJson) {
 
-				new MenuItem;
-				
-				MenuItem.Name = apiJson.name;
-				MenuItem.Description = api.Json.description;
+			return menuItems;
 
+		}
+
+
+		/*
+			constructQuery(MenuItem menuItem) {
+
+				return query;
+	
 			}
 		*/
 
