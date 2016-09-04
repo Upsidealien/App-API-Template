@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Xamarin.Forms;
 
 namespace AppAPITemplate
@@ -63,15 +64,7 @@ namespace AppAPITemplate
 			currentItem = item;
 			Content = pageInfo;
 
-
-		}
-
-
-		protected override async void OnAppearing()
-		{
-			//This will call the API and change the pageInfo once the info has been retrieved
-			base.OnAppearing();
-			List<string> list = await RequestTimeAsync();
+			List<string> list = CallAPI(item);
 
 			One.Text = list[0];
 			Two.Text = list[1];
@@ -80,19 +73,45 @@ namespace AppAPITemplate
 			Five.Text = list[4];
 		}
 
-		static async Task<List<string>> RequestTimeAsync()
+		public List<string> CallAPI(MenuItem menuItem)
 		{
 			//This makes the actual API call
 
 			//Create an Example API
-			List<string> list = new List<string>();
-			list.Add("One");
-			list.Add("Two");
-			list.Add("Three");
-			list.Add("Four");
-			list.Add("Five");
+			List<string> list = ConstructList(GetResponseFromAPI(menuItem));
+
 
 			return list;
+		}
+
+		public string GetResponseFromAPI(MenuItem menuItem)
+		{
+
+			//string query = constructQuery(menuItem);
+
+			string results = "[{ One : \"Thomas 2\", Two : \"Is the best 2\", Three : \"And number three \", Four : \"And is four too much\", Five : \"A a high five\"}]"; //string results = call query.
+
+			return results;
+		}
+
+		public List<string> ConstructList(string response)
+		{
+
+			List<string> items = new List<string>();
+
+			dynamic jsonResult = JsonConvert.DeserializeObject(response); //var jsonResult = Newtonsoft.Json.Linq.JObject.Parse(results);
+
+			foreach (var item in jsonResult)
+			{
+				items.Add(item["One"].Value);
+				items.Add(item["Two"].Value);
+				items.Add(item["Three"].Value);
+				items.Add(item["Four"].Value);
+				items.Add(item["Five"].Value);
+			}
+
+			return items;
+
 		}
 	}
 }
