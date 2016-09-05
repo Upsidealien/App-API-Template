@@ -42,7 +42,7 @@ namespace AppAPITemplate
 
 			//string query = constructQuery(menuItem);
 
-			string results = "[{ Name : \"Thomas\", Description : \"Is the best\"}, {Name : \"Cartwright\", Description : \"Is the bestest\"}]"; //string results = call query.
+			string results = "[{ Name : \"FTSE 100 Index\", Description : \"Number 6\"}, { Name : \"NYSE Composite Index\", Description : \"Number 5\"}, { Name : \"NASDAQ 100 Index\", Description : \"Number 4\"}, { Name : \"NASDAQ Composite Index\", Description : \"Number 3\"}, { Name : \"S&P 500 Index\", Description : \"Number 1\"}, {Name : \"Dow Jones Industrial Average\", Description : \"Number 2\"}]"; //string results = call query.
 
 			return results;
 		}
