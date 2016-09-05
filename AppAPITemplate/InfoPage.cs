@@ -123,10 +123,10 @@ namespace AppAPITemplate
 
 
 			string symbol = jsonResult["query"]["results"]["quote"]["symbol"].Value;
-			string name = jsonResult["query"]["results"]["quote"]["name"].Value;
+			string name = jsonResult["query"]["results"]["quote"]["Name"].Value;
 			string daysLow = jsonResult["query"]["results"]["quote"]["DaysLow"].Value;
 			string daysHigh = jsonResult["query"]["results"]["quote"]["DaysHigh"].Value;
-			string time = jsonResult["query"]["created"].Value;
+			string time = jsonResult["query"]["created"].Value.ToString();
 
 			items.Add(time);
 			items.Add(name);
